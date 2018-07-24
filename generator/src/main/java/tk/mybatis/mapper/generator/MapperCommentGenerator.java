@@ -44,6 +44,8 @@ public class MapperCommentGenerator implements CommentGenerator {
     private String endingDelimiter    = "";
     //强制生成注解
     private boolean forceAnnotation;
+    // 生成swagger注解
+    private boolean swagger = true;
 
     public MapperCommentGenerator() {
         super();
@@ -87,6 +89,11 @@ public class MapperCommentGenerator implements CommentGenerator {
         String forceAnnotation = properties.getProperty("forceAnnotation");
         if (StringUtility.stringHasValue(forceAnnotation)) {
             this.forceAnnotation = forceAnnotation.equalsIgnoreCase("TRUE");
+        }
+
+        String swagger = properties.getProperty("swagger");
+        if (StringUtility.stringHasValue(swagger)) {
+            this.swagger = swagger.equalsIgnoreCase("TRUE");
         }
     }
 
@@ -144,7 +151,12 @@ public class MapperCommentGenerator implements CommentGenerator {
             sb.append(introspectedColumn.getRemarks());
             field.addJavaDocLine(sb.toString());
             field.addJavaDocLine(" */");
+            if (swagger) {
+                // 添加swagger注解
+                field.addAnnotation("@ApiModelProperty(value = \"" + introspectedColumn.getRemarks() + "\")");
+            }
         }
+
         //添加注解
         if (field.isTransient()) {
             //@Column

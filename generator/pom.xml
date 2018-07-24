@@ -32,6 +32,7 @@
     </parent>
     <artifactId>mapper-generator</artifactId>
     <packaging>jar</packaging>
+    <version>1.0-swagger</version>
 
     <name>mapper-generator</name>
     <description>Mybatis 通用 Mapper 代码生成器</description>

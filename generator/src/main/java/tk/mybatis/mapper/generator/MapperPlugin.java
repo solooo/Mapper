@@ -45,6 +45,8 @@ public class MapperPlugin extends FalseMethodPlugin {
     private Set<String> mappers                   = new HashSet<String>();
     private boolean     caseSensitive             = false;
     private boolean     useMapperCommentGenerator = true;
+    // 生成swagger注解
+    private boolean     swagger                   = true;
     //开始的分隔符，例如mysql为`，sqlserver为[
     private String      beginningDelimiter        = "";
     //结束的分隔符，例如mysql为`，sqlserver为]
@@ -99,6 +101,10 @@ public class MapperPlugin extends FalseMethodPlugin {
     private void processEntityClass(TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
         //引入JPA注解
         topLevelClass.addImportedType("javax.persistence.*");
+        if (swagger) {
+            topLevelClass.addImportedType("io.swagger.annotations.ApiModel");
+            topLevelClass.addImportedType("io.swagger.annotations.ApiModelProperty");
+        }
         String tableName = introspectedTable.getFullyQualifiedTableNameAtRuntime();
         //如果包含空格，或者需要分隔符，需要完善
         if (StringUtility.stringContainsSpace(tableName)) {
@@ -184,6 +190,10 @@ public class MapperPlugin extends FalseMethodPlugin {
             }
         } else {
             throw new RuntimeException("Mapper插件缺少必要的mappers属性!");
+        }
+        String swagger = this.properties.getProperty("swagger");
+        if (StringUtility.stringHasValue(swagger)) {
+            this.swagger = swagger.equalsIgnoreCase("TRUE");
         }
         String caseSensitive = this.properties.getProperty("caseSensitive");
         if (StringUtility.stringHasValue(caseSensitive)) {
